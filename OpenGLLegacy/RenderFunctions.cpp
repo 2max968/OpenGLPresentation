@@ -1,5 +1,5 @@
 #include "RenderFunctions.h"
-#include <GL/glew.h>
+#include "GLIncludes.h"
 #include <vector>
 #include <iostream>
 #include <cmath>
@@ -125,9 +125,16 @@ void LoadPerspective(int fovY, float near, float far, float windowWidth, float w
 		0, 0, -far * near / (far - near), 0
 	};
 	glLoadMatrixf(mat);
+	float mat2[] = {
+		windowHeight / windowWidth, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1
+	};
+	glMultMatrixf(mat2);
 	float h = 1;
 	float w = h / windowHeight * windowWidth;
-	glOrtho(-w, w, -h, h, near, far);
+	//glOrtho(-w, w, -h, h, near, far);
 }
 
 void Cube(float time, float windowWidth, float windowHeight)
@@ -140,53 +147,54 @@ void Cube(float time, float windowWidth, float windowHeight)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glMatrixMode(GL_PROJECTION);
-	LoadPerspective(90, 1, 100, windowWidth, windowHeight);
+	LoadPerspective(90, 0.1, 100, windowWidth, windowHeight);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	glTranslatef(0, 0, 20);
+	glTranslatef(0, 0, -20);
 	glRotatef(time * 45, 0, 1, 0);
 	glRotatef(time * 90, 1, 0, 0);
 
 	bool colored = true;
+	float size = 5;
 
 	if (!colored) glColor3f(1, 0, 0);
 	glBegin(GL_QUADS);
 	// Front
 	if(colored) glColor3f(1, 0, 0);
-	glVertex3f(1, 1, -1);
-	glVertex3f(-1, 1, -1);
-	glVertex3f(-1, -1, -1);
-	glVertex3f(1, -1, -1);
+	glVertex3f(size, size, -size);
+	glVertex3f(-size, size, -size);
+	glVertex3f(-size, -size, -size);
+	glVertex3f(size, -size, -size);
 	// Back
 	if(colored) glColor3f(1, 1, 0);
-	glVertex3f(1, 1, 1);
-	glVertex3f(-1, 1, 1);
-	glVertex3f(-1, -1, 1);
-	glVertex3f(1, -1, 1);
-	// Side 1
+	glVertex3f(size, size, size);
+	glVertex3f(-size, size, size);
+	glVertex3f(-size, -size, size);
+	glVertex3f(size, -size, size);
+	// Side size
 	if(colored) glColor3f(0, 1, 0);
-	glVertex3f(1, 1, 1);
-	glVertex3f(1, -1, 1);
-	glVertex3f(1, -1, -1);
-	glVertex3f(1, 1, -1);
+	glVertex3f(size, size, size);
+	glVertex3f(size, -size, size);
+	glVertex3f(size, -size, -size);
+	glVertex3f(size, size, -size);
 	// Side 2
 	if(colored) glColor3f(0, 1, 1);
-	glVertex3f(-1, 1, 1);
-	glVertex3f(-1, -1, 1);
-	glVertex3f(-1, -1, -1);
-	glVertex3f(-1, 1, -1);
+	glVertex3f(-size, size, size);
+	glVertex3f(-size, -size, size);
+	glVertex3f(-size, -size, -size);
+	glVertex3f(-size, size, -size);
 	// Top
 	if(colored) glColor3f(0, 0, 1);
-	glVertex3f(1, 1, 1);
-	glVertex3f(-1, 1, 1);
-	glVertex3f(-1, 1, -1);
-	glVertex3f(1, 1, -1);
+	glVertex3f(size, size, size);
+	glVertex3f(-size, size, size);
+	glVertex3f(-size, size, -size);
+	glVertex3f(size, size, -size);
 	// Bottom
-	if(colored) glColor3f(1, 0, 1);
-	glVertex3f(1, -1, 1);
-	glVertex3f(-1, -1, 1);
-	glVertex3f(-1, -1, -1);
-	glVertex3f(1, -1, -1);
+	if(colored) glColor3f(size, 0, 1);
+	glVertex3f(size, -size, size);
+	glVertex3f(-size, -size, size);
+	glVertex3f(-size, -size, -size);
+	glVertex3f(size, -size, -size);
 	glEnd();
 }

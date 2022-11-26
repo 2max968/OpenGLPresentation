@@ -29,5 +29,8 @@
     <ClInclude Include="RenderFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GLIncludes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
