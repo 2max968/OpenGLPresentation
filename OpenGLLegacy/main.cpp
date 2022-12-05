@@ -22,6 +22,7 @@ int main()
     }
 
     std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
+    std::cout << "GLSL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
     auto startTime = std::chrono::steady_clock::now();
     int texture = LoadTexture();
@@ -45,7 +46,7 @@ int main()
         glViewport(0, 0, windowW, windowH);
 
         //RedTriangle();
-        //ColoredTriangle();
+        ColoredTriangle();
         //TexturedQuad(texture);
         //RotatedTriangle(time);
         //Cube(time, windowW, windowH);
