@@ -48,7 +48,7 @@ int main()
         //ColoredTriangle();
         //TexturedQuad(texture);
         //RotatedTriangle(time);
-        //Cube(time, windowW, windowH);
+        Cube(time, windowW, windowH);
 
         glfwSwapBuffers(window);
     }

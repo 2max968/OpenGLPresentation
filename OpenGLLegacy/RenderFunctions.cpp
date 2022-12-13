@@ -108,14 +108,6 @@ void RotatedTriangle(float time)
 
 void LoadPerspective(int fovY, float near, float far, float windowWidth, float windowHeight)
 {
-	/*float fov = fovY * PI / 180.0;
-	float halfHeight = tan(fov / 2) * near;
-	float halfWidth = halfHeight / (float)windowHeight * windowWidth;
-
-	glLoadIdentity();
-	glFrustum(-halfHeight, halfHeight, -halfHeight, halfHeight, near, far);
-	glOrtho(-halfWidth, halfWidth, -halfHeight, halfHeight, near, far);*/
-	
 	float fovX = fovY / windowHeight * windowWidth;
 	float S = 1.0 / tan(fovY / 2 * PI / 180);
 	float mat[] = {
@@ -134,7 +126,6 @@ void LoadPerspective(int fovY, float near, float far, float windowWidth, float w
 	glMultMatrixf(mat2);
 	float h = 1;
 	float w = h / windowHeight * windowWidth;
-	//glOrtho(-w, w, -h, h, near, far);
 }
 
 void Cube(float time, float windowWidth, float windowHeight)
