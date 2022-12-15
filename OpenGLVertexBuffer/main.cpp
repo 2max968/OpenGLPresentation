@@ -8,9 +8,12 @@ int main()
 {
     glfwInit();
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGl Vertex Buffer", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL Vertex Buffer", NULL, NULL);
     glfwMakeContextCurrent(window);
     glewInit();
+
+    std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
+    std::cout << "GLSL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
     prepareRenderer();
 

@@ -138,7 +138,6 @@
     <ClCompile Include="RenderFunctions.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GLIncludes.h" />
     <ClInclude Include="RenderFunctions.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

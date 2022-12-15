@@ -1,58 +1,95 @@
 #include <iostream>
 #include <chrono>
-#include "GLIncludes.h"
+#include <conio.h>
+#include <GLFW/glfw3.h>
 #include "RenderFunctions.h"
 
 int main()
 {
-    int error = glfwInit();
-    if (error != GL_TRUE)
+    while (true)
     {
-        std::cerr << "Error loading GLFW: " << glewGetErrorString(error) << std::endl;
-        return -1;
-    }
-    GLFWwindow *window = glfwCreateWindow(800, 600, "OpenGL", NULL, NULL);
-    glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);
-    error = glewInit();
-    if (error != GLEW_OK)
-    {
-        std::cerr << "Error loading GLEW: " << glewGetErrorString(error) << std::endl;
-        return -1;
-    }
+        // Auswahl des Unterprogramms
+        char selectedProgram = 0;
+        while (selectedProgram < '1' || selectedProgram > '5')
+        {
+            std::wcout << L"1: Rotes dreieck" << std::endl;
+            std::wcout << L"2: Farbiges dreieck" << std::endl;
+            std::wcout << L"3: Texturen" << std::endl;
+            std::wcout << L"4: Rotierendes dreieck" << std::endl;
+            std::wcout << L"5: Würfel" << std::endl;
+            std::wcout << L"0: Exit" << std::endl;
+            selectedProgram = _getche();
+            std::cout << std::endl;
+            if (selectedProgram == '0')
+                return 0;
+        }
 
-    std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
-    std::cout << "GLSL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-
-    auto startTime = std::chrono::steady_clock::now();
-    int texture = LoadTexture();
-    float lastFrameTime = 0;
-
-    char titleBuffer[100];
-
-    while (!glfwWindowShouldClose(window))
-    {
-        float time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - startTime).count() / 1000.0;
-        float dt = time - lastFrameTime;
-        float fps = 1 / dt;
-        snprintf(titleBuffer, 100, "FPS: %i", (int)fps);
-        glfwSetWindowTitle(window, titleBuffer);
-        lastFrameTime = time;
-
-        glfwPollEvents();
+        // OpenGl Framework initialisieren
+        int error = glfwInit();
+        if (error != GL_TRUE)
+        {
+            std::cerr << "Error loading GLFW" << std::endl;
+            return -1;
+        }
+        // Neues Fenster erzeugen
+        GLFWwindow* window = glfwCreateWindow(600, 600, "OpenGL", NULL, NULL);
+        // Fenster als aktuellen Rendercontext festlegen
         glfwMakeContextCurrent(window);
-        int windowW, windowH;
-        glfwGetWindowSize(window, &windowW, &windowH);
-        glViewport(0, 0, windowW, windowH);
+        // Ausgabe Framerate auf die Frequenz des Monitors setzen
+        glfwSwapInterval(1);
 
-        //RedTriangle();
-        ColoredTriangle();
-        //TexturedQuad(texture);
-        //RotatedTriangle(time);
-        Cube(time, windowW, windowH);
+        // OpenGl Version in der Konsole ausgeben
+        std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
 
-        glfwSwapBuffers(window);
+        // Start-Zeitpunkt des Programms abspeichern
+        auto startTime = std::chrono::steady_clock::now();
+
+        // Textur laden
+        int texture = LoadTexture();
+
+        // Dauerschleife solange laufen lassen, bis das Fenster geschlossen wird
+        while (!glfwWindowShouldClose(window))
+        {
+            // Zeit (in Sekunden) seit Programmstart ausrechnen
+            float time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - startTime).count() / 1000.0;
+
+            // Fenster- und Eingabeereignisse abrufen
+            glfwPollEvents();
+            
+            glfwMakeContextCurrent(window);
+            // Aktuelle Größe des Fensters abrufen
+            int windowW, windowH;
+            glfwGetWindowSize(window, &windowW, &windowH);
+            // Größe der Ausgabe anpassen
+            glViewport(0, 0, windowW, windowH);
+
+            switch (selectedProgram)
+            {
+            case '1':
+                RedTriangle();
+                break;
+            case '2':
+                ColoredTriangle();
+                break;
+            case '3':
+                TexturedQuad(texture);
+                break;
+            case '4':
+                RotatedTriangle(time);
+                break;
+            case '5':
+                Cube(time, windowW, windowH);
+                break;
+            }
+
+            // Aktuelles Bild auf dem Bildschirm ausgeben
+            glfwSwapBuffers(window);
+        }
+
+        // Fenster schließen
+        glfwDestroyWindow(window);
+
+        // GLFW wieder entladen
+        glfwTerminate();
     }
-
-    glfwTerminate();
 }

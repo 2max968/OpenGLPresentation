@@ -1,5 +1,5 @@
 #include "RenderFunctions.h"
-#include "GLIncludes.h"
+#include <GLFW/glfw3.h>
 #include <vector>
 #include <iostream>
 #include <cmath>
@@ -9,15 +9,15 @@
 
 void RedTriangle()
 {
-	glClearColor(0, 0, 0, 1);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(0, 0, 0, 1);		// Rücksetzfarbe auf Schwarz setzen
+	glClear(GL_COLOR_BUFFER_BIT);	// Bildschirm leeren
 
-	glColor3f(1, 0, 0);
-	glBegin(GL_TRIANGLES);
-	glVertex2f(-0.5, 0.5);
-	glVertex2f(0.5, 0.5);
-	glVertex2f(0, -0.5);
-	glEnd();
+	glColor3f(1, 0, 0);				// Farbe auf Rot setzen
+	glBegin(GL_TRIANGLES);			// Dreieck beginnen
+	glVertex2f(-0.5, 0.5);			// Ersten Eckpunkt senden
+	glVertex2f(0.5, 0.5);			// Zweiten Eckpunkt senden
+	glVertex2f(0, -0.5);			// Dritten Eckpunkt senden
+	glEnd();						// Dreieck abschließen
 }
 
 void ColoredTriangle()
@@ -27,13 +27,13 @@ void ColoredTriangle()
 
 	glBegin(GL_TRIANGLES);
 
-	glColor3f(1, 0, 0);
+	glColor3f(1, 0, 0);				// Farbe auf Rot setzen
 	glVertex2f(-0.5, 0.5);
 
-	glColor3f(0, 1, 0);
+	glColor3f(0, 1, 0);				// Farbe auf Grün setzen
 	glVertex2f(0.5, 0.5);
 
-	glColor3f(0, 0, 1);
+	glColor3f(0, 0, 1);				// Farbe auf Blau setzen
 	glVertex2f(0, -0.5);
 
 	glEnd();
@@ -41,6 +41,7 @@ void ColoredTriangle()
 
 int LoadTexture()
 {
+	// Bilddatei dekodieren
 	std::vector<uint8_t> imageData;
 	uint32_t width, height;
 	uint32_t error = lodepng::decode(imageData, width, height, "Bricks.png");
@@ -51,9 +52,14 @@ int LoadTexture()
 	}
 
 	GLuint textureId;
+	// OpenGL Textur erzeugen
 	glGenTextures(1, &textureId);
 	glBindTexture(GL_TEXTURE_2D, textureId);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData.data());
+	// Textur mit Daten befüllen
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height,
+		0, GL_RGBA, GL_UNSIGNED_BYTE, imageData.data());
+
+	// Textur Filter aktivieren
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	return textureId;
@@ -64,23 +70,24 @@ void TexturedQuad(int textureId)
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, textureId);
-	glColor3f(1, 1, 1);
+	glEnable(GL_TEXTURE_2D);					// Texturen aktivieren
+	glBindTexture(GL_TEXTURE_2D, textureId);	// Textur zum rendern auswählen
+	glColor3f(1, 1, 1);			// Die Farbe wird mit den Farben der Textur multipliziert
+								// daher sollte diese auf (1, 1, 1) gesetzt sein
 
 	glBegin(GL_QUADS);
 
-	glTexCoord2f(0, 0);
+	glTexCoord2f(0, 0);			// Obere linke Ecke der Textur auswählen
 	glVertex2f(-0.5, 0.5);
 
-	glTexCoord2f(1, 0);
+	glTexCoord2f(1, 0);			// Obere rechte Ecke der Textur auswählen
 	glVertex2f(0.5, 0.5);
 
 	glTexCoord2f(1, 1);
-	glVertex2f(0.5, -0.5);
+	glVertex2f(0.5, -0.5);		// Untere rechte Ecke der Textur auswählen
 
 	glTexCoord2f(0, 1);
-	glVertex2f(-0.5, -0.5);
+	glVertex2f(-0.5, -0.5);		// Untere linke Ecke der Textur auswählen
 
 	glEnd();
 
@@ -89,12 +96,14 @@ void TexturedQuad(int textureId)
 
 void RotatedTriangle(float time)
 {
+	// time: Die Zeit seit dem Programmstart in Sekunden
+
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glRotatef(time * 45, 0, 0, 1);
+	glMatrixMode(GL_MODELVIEW);		// Die Modelview Matrix bearbeiten
+	glLoadIdentity();				// Modelview Matrix auf Einheitsmatrix zurücksetzen
+	glRotatef(time * 45, 0, 0, 1);	// Modelview Matrix um 45° pro Sekunde um die z-Achse drehen
 
 	glBegin(GL_TRIANGLES);
 	glColor3f(1, 0, 0);
@@ -108,15 +117,18 @@ void RotatedTriangle(float time)
 
 void LoadPerspective(int fovY, float near, float far, float windowWidth, float windowHeight)
 {
-	float fovX = fovY / windowHeight * windowWidth;
+	// In mat1 wird eine Perspektivmatrix erzeugt
+	// In mat2 wird eine Matrix erzeugt, um das Seitenverhältnis des Fensters auszugleichen
+	// Diese beiden Matrizen werden miteinander multipliziert um die Perspektiv Matrix zu bilden
+
 	float S = 1.0 / tan(fovY / 2 * PI / 180);
-	float mat[] = {
+	float mat1[] = {
 		S, 0, 0, 0,
 		0, S, 0, 0,
 		0, 0, -far/(far-near), -1,
 		0, 0, -far * near / (far - near), 0
 	};
-	glLoadMatrixf(mat);
+	glLoadMatrixf(mat1);
 	float mat2[] = {
 		windowHeight / windowWidth, 0, 0, 0,
 		0, 1, 0, 0,
@@ -124,20 +136,18 @@ void LoadPerspective(int fovY, float near, float far, float windowWidth, float w
 		0, 0, 0, 1
 	};
 	glMultMatrixf(mat2);
-	float h = 1;
-	float w = h / windowHeight * windowWidth;
 }
 
 void Cube(float time, float windowWidth, float windowHeight)
 {
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LEQUAL);
+	glEnable(GL_DEPTH_TEST);			// Tiefen-Test aktivieren
 
 	glClearColor(0, 0, 0, 1);
-	glClearDepth(GL_DEPTH_CLEAR_VALUE);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearDepth(GL_DEPTH_CLEAR_VALUE);	// Rücksetztiefe einstellen
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Farbwerte und Tiefeninformationen
+														// zurücksetzen
 
-	glMatrixMode(GL_PROJECTION);
+	glMatrixMode(GL_PROJECTION);	// Projektions Matrix bearbeiten
 	LoadPerspective(90, 0.1, 100, windowWidth, windowHeight);
 
 	glMatrixMode(GL_MODELVIEW);
@@ -163,7 +173,7 @@ void Cube(float time, float windowWidth, float windowHeight)
 	glVertex3f(-size, size, size);
 	glVertex3f(-size, -size, size);
 	glVertex3f(size, -size, size);
-	// Side size
+	// Side 1
 	if(colored) glColor3f(0, 1, 0);
 	glVertex3f(size, size, size);
 	glVertex3f(size, -size, size);
